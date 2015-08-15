@@ -1,0 +1,54 @@
+# Maintainer: /dev/rs0 <rs0@secretco.de.com>
+# Contributor: Schala
+# Contributor: kart0ffelsack
+# Contributor: Jerome Leclanche <jerome.leclanche+arch@gmail.com>
+
+_pkgname="craftbukkit"
+pkgname="$_pkgname-devel"
+pkgver=1.7.10_R0.1_20140817.180155_16
+pkgrel=1
+pkgdesc="Minecraft server implementing the Bukkit API (development)"
+arch=('any')
+url="https://bukkit.org"
+license=('LGPL')
+depends=('java-runtime-headless' 'tmux' 'sudo')
+makedepends=('xmlstarlet')
+
+_pkgver="$(echo $pkgver | cut -d _ -f 1,2)"
+_pkgver="${_pkgver/_/-}"
+__pkgver="${_pkgver/-/}"
+_timestamp="$(echo $pkgver | cut -d _ -f 3)"
+_pkgnum="$(echo $pkgver | cut -d _ -f 4)"
+
+provides=("$_pkgname=${__pkgver,,}" "$_pkgname-stable=${__pkgver,,}")
+conflicts=("$_pkgname" "$_pkgname-stable")
+
+source=(
+    "$_pkgname.jar::http://repo.bukkit.org/content/groups/public/org/bukkit/$_pkgname/$_pkgver-SNAPSHOT/$_pkgname-$_pkgver-$_timestamp-$_pkgnum.jar"
+    "$_pkgname.service"
+    "$_pkgname.sh"
+)
+sha256sums=(
+    'SKIP'
+    '9f3edffbb61fb647cf679b582793bae6c63c0d7bd9272a4cb821e9aac5828707'
+    '70298cd0a102953ecc19ad44408e96d3050913b60344bebc84fa82e6918e89b5'
+)
+noextract="$_pkgname.jar"
+install="craftbukkit-devel.install"
+
+pkgver() {
+    rss=$(curl -s "http://dl.bukkit.org/downloads/bukkit/feeds/latest-dev.rss")
+    rss=$(echo $rss | xml sel -t -v "/rss/channel/item[1]/title")
+    version=$(echo $rss | cut -d ' ' -f 5)
+    build=$(echo $rss | cut -d ' ' -f 7)
+    xml=$(curl -s "http://repo.bukkit.org/content/groups/public/org/bukkit/$_pkgname/$version-SNAPSHOT/maven-metadata.xml")
+    timestamp=$(echo $xml | xml sel -t -v "/metadata/versioning/snapshot/timestamp")
+    number=$(echo $xml | xml sel -t -v "/metadata/versioning/snapshot/buildNumber")
+    echo "${version/-/_}_${timestamp}_${number}"
+}
+
+package() {
+    install -Dm0644 "$srcdir/$_pkgname.jar" "$pkgdir/srv/$_pkgname/$_pkgname.jar"
+    install -Dm0644 "$srcdir/$_pkgname.service" "$pkgdir/usr/lib/systemd/system/$_pkgname.service"
+    install -Dm0755 "$srcdir/$_pkgname.sh" "$pkgdir/srv/$_pkgname/$_pkgname.sh"
+}

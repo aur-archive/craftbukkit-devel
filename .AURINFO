@@ -1,0 +1,23 @@
+pkgbase = craftbukkit-devel
+	pkgdesc = Minecraft server implementing the Bukkit API (development)
+	pkgver = 1.7.10_R0.1_20140817.180155_16
+	pkgrel = 1
+	url = https://bukkit.org
+	install = craftbukkit-devel.install
+	arch = any
+	license = LGPL
+	makedepends = xmlstarlet
+	depends = java-runtime-headless
+	depends = tmux
+	depends = sudo
+	provides = craftbukkit=1.7.10r0.1
+	provides = craftbukkit-stable=1.7.10r0.1
+	conflicts = craftbukkit
+	conflicts = craftbukkit-stable
+	source = craftbukkit.jar::http://repo.bukkit.org/content/groups/public/org/bukkit/craftbukkit/1.7.10-R0.1-SNAPSHOT/craftbukkit-1.7.10-R0.1-20140817.180155-16.jar
+	source = craftbukkit.service
+	source = craftbukkit.sh
+	noextract = craftbukkit.jar
+
+pkgname = craftbukkit-devel
+
